@@ -1,0 +1,25 @@
+# IDEs
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Docker
+.docker/
+
+# Dependencies
+node_modules/
+venv/
+.venv/
+env/
+data/
+__pycache__/
+*.pyc
