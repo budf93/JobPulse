@@ -13,3 +13,16 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  # NEW FASTAPI SERVICE
+  api:
+    build: ./jobpulse-be
+    container_name: jobpulse_api
+    ports:
+      - "8000:8000"
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    environment:
+      # This points to the Docker container name instead of localhost
+      - ELASTICSEARCH_URL=http://elasticsearch:9200

@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
-from elasticsearch import Elasticsearch
+from elasticsearch import AsyncElasticsearch
 import os
 
 app = FastAPI(title="JobPulse API")
@@ -15,7 +15,8 @@ app.add_middleware(
 )
 
 # Elasticsearch client
-es = Elasticsearch("http://localhost:9200")
+ES_URL = os.getenv("ELASTICSEARCH_URL", "http://localhost:9200")
+es = AsyncElasticsearch(ES_URL)
 
 @app.get("/search")
 async def search_jobs(q: str = Query(None)):
@@ -36,15 +37,18 @@ async def search_jobs(q: str = Query(None)):
         }
     
     try:
-        response = es.search(index=index_name, body=body)
+        # ADD AWAIT HERE:
+        response = await es.search(index=index_name, body=body) 
         hits = response['hits']['hits']
         return [hit['_source'] for hit in hits]
     except Exception as e:
-        return {"error": str(e)}
+        from fastapi import HTTPException
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/health")
 async def health_check():
-    return {"status": "ok", "elasticsearch": es.ping()}
+    is_connected = await es.ping() 
+    return {"status": "ok", "elasticsearch": is_connected}
 
 if __name__ == "__main__":
     import uvicorn

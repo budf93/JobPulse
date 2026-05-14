@@ -1,16 +1,16 @@
 from elasticsearch import Elasticsearch
 import time
 
-es = Elasticsearch("http://localhost:9200")
+es = Elasticsearch("http://127.0.0.1:9200")
 
 def wait_for_es():
-    print("Waiting for Elasticsearch to be ready...")
+    print("Waiting for Elasticsearch to be ready at http://127.0.0.1:9200...")
     for _ in range(30):
         try:
             if es.ping():
                 return True
-        except:
-            pass
+        except Exception as e:
+            print(f"Ping failed: {e}")
         time.sleep(1)
     return False
 

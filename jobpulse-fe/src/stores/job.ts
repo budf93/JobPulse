@@ -28,7 +28,10 @@ export const useJobStore = defineStore('job', () => {
       }
 
       const response = await fetch(url)
-      if (!response.ok) throw new Error('Failed to fetch jobs')
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.detail || 'Failed to fetch jobs')
+      }
       jobs.value = await response.json()
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'An error occurred'
